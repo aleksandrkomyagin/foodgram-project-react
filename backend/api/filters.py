@@ -18,6 +18,13 @@ class RecipeFilter(FilterSet):
         model = Recipe
         fields = ('tags', 'author')
 
+    def filter_queryset(self, queryset):
+        tags = self.request.query_params.get('tags')
+        if tags:
+            return Recipe.objects.filter(tags__slug=tags)
+        queryset = Recipe.objects.none()
+        return super().filter_queryset(queryset)
+
     def is_in_shopping_cart_filter(self, queryset, name, value):
         user = self.request.user
         if value and user.is_authenticated:
