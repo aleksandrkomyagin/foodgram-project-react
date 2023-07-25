@@ -15,6 +15,7 @@ class IngredientAdmin(admin.ModelAdmin):
     list_display = ('pk', 'name', 'measurement_unit')
     search_fields = ('name', )
     list_filter = ('name', )
+    empty_value_display = '-пусто-'
 
 
 @admin.register(models.Recipe)
@@ -38,15 +39,18 @@ class RecipeAdmin(admin.ModelAdmin):
 class RecipeIngredientAdmin(admin.ModelAdmin):
     list_display = ('pk', 'recipe', 'ingredient', 'amount')
     list_editable = ('recipe', 'ingredient', 'amount')
+    empty_value_display = '-пусто-'
 
 
 @admin.register(models.Favorite)
 class FavoriteAdmin(admin.ModelAdmin):
     list_display = ('pk', 'user', 'recipe')
     list_editable = ('user', 'recipe')
+    empty_value_display = '-пусто-'
 
 
 @admin.register(models.ShoppingCart)
 class ShoppingCartAdmin(admin.ModelAdmin):
     list_display = ('pk', 'user', 'recipe')
     list_editable = ('user', 'recipe')
+    empty_value_display = '-пусто-'
