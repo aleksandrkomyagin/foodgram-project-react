@@ -76,12 +76,12 @@ POSTGRES = {
         'PASSWORD': os.getenv('POSTGRES_PASSWORD', ''),
         'HOST': os.getenv('DB_HOST', ''),
         'PORT': os.getenv('DB_PORT', 5432)
-    }
+}
 
 SQLITE3 = {
         'ENGINE': 'django.db.backends.sqlite3',
         'NAME': BASE_DIR / 'db.sqlite3',
-    }
+}
 
 DB_ENGINE = (SQLITE3, POSTGRES)[os.getenv('DB_ENGINE_POSTGRES') == 'True']
 

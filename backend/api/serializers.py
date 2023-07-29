@@ -5,8 +5,9 @@ from drf_base64.fields import Base64ImageField
 from rest_framework import serializers
 
 from users.models import Subscribe
-from recipes.models import (Favorite, Ingredient, Recipe, RecipeIngredient,
-                            ShoppingCart, Tag)
+# from recipes.models import (Favorite, Ingredient, Recipe, RecipeIngredient,
+#                             ShoppingCart, Tag)
+from recipes.models import (Ingredient, Recipe, RecipeIngredient, Tag)
 
 User = get_user_model()
 
@@ -208,7 +209,7 @@ class GetRecipeSerializer(serializers.ModelSerializer):
 
 class EditIngredientSerializer(serializers.ModelSerializer):
     id = serializers.IntegerField()
-    # id = serializers.PrimaryKeyRelatedField(queryset=Ingredient.objects.all())
+# id = serializers.PrimaryKeyRelatedField(queryset=Ingredient.objects.all())
     amount = serializers.IntegerField()
 
     class Meta:
