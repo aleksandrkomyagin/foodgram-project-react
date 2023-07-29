@@ -3,6 +3,10 @@ from django.contrib import admin
 from . import models
 
 
+class IngredientsInline(admin.TabularInline):
+    model = models.Recipe.ingredients.through
+
+
 @admin.register(models.Tag)
 class TagAdmin(admin.ModelAdmin):
     list_display = ('pk', 'name', 'color', 'slug')
@@ -28,6 +32,8 @@ class RecipeAdmin(admin.ModelAdmin):
         'cooking_time', 'name',
         'text', 'image', 'author'
     )
+    inlines = (IngredientsInline, )
+    exclude = ('ingredients', )
     empty_value_display = '-пусто-'
 
     @admin.display(description='Избранные')

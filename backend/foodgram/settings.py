@@ -26,15 +26,16 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
 
-    'rest_framework.authtoken',
-    'rest_framework',
-    'rest_framework_simplejwt',
-    'django_filters',
     'djoser',
+    'django_filters',
+    'rest_framework',
+    'rest_framework.authtoken',
+    'rest_framework_simplejwt',
+    'colorfield',
 
+    'recipes.apps.RecipesConfig',
     'users.apps.UsersConfig',
     'api.apps.ApiConfig',
-    'recipes.apps.RecipesConfig',
 
 ]
 
@@ -68,16 +69,7 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'foodgram.wsgi.application'
 
-# DATABASES = {
-#     'default': {
-#         'ENGINE': 'django.db.backends.sqlite3',
-#         'NAME': BASE_DIR / 'db.sqlite3',
-#     }
-# }
-
-
-DATABASES = {
-    'default': {
+POSTGRES = {
         'ENGINE': 'django.db.backends.postgresql_psycopg2',
         'NAME': os.getenv('POSTGRES_DB', 'django'),
         'USER': os.getenv('POSTGRES_USER', 'django'),
@@ -85,6 +77,16 @@ DATABASES = {
         'HOST': os.getenv('DB_HOST', ''),
         'PORT': os.getenv('DB_PORT', 5432)
     }
+
+SQLITE3 = {
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': BASE_DIR / 'db.sqlite3',
+    }
+
+DB_ENGINE = (SQLITE3, POSTGRES)[os.getenv('DB_ENGINE_POSTGRES') == 'True']
+
+DATABASES = {
+    'default': DB_ENGINE
 }
 
 
@@ -115,8 +117,8 @@ REST_FRAMEWORK = {
         'django_filters.rest_framework.DjangoFilterBackend',
         'rest_framework.filters.SearchFilter',
     ],
-    'DEFAULT_PAGINATION_CLASS': 'api.pagination.LimitPagePagination',
-    'PAGE_SIZE': 6,
+    # 'DEFAULT_PAGINATION_CLASS': 'api.pagination.LimitPagePagination',
+    # 'PAGE_SIZE': 6,
 }
 
 
@@ -148,3 +150,5 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 AUTH_USER_MODEL = 'users.User'
 
 FILE_NAME = 'shopping_cart.txt'
+MAX_LENGHT = 200
+PAGE_SIZE = 6

@@ -1,6 +1,9 @@
 from django.contrib.auth import get_user_model
-from django.core.validators import MinValueValidator, RegexValidator
+# from django.core.validators import MinValueValidator, RegexValidator
+from django.core.validators import MinValueValidator
 from django.db import models
+from foodgram.settings import MAX_LENGHT
+from colorfield.fields import ColorField
 
 User = get_user_model()
 
@@ -9,12 +12,12 @@ class Ingredient(models.Model):
     name = models.CharField(
         'Название',
         blank=False,
-        max_length=200
+        max_length=MAX_LENGHT
     )
     measurement_unit = models.CharField(
         'Единица измерения',
         blank=False,
-        max_length=200
+        max_length=MAX_LENGHT
     )
 
     class Meta:
@@ -31,29 +34,31 @@ class Tag(models.Model):
         'Название',
         blank=False,
         unique=True,
-        max_length=200
+        max_length=MAX_LENGHT
     )
-    color = models.CharField(
-        'Цвет в HEX-формате',
-        max_length=7,
-        blank=False,
-        unique=True,
-        validators=[
-            RegexValidator(
-                '^#([a-fA-F0-9]{6})',
-                message='Нужно ввести HEX-код цвета.'
-            )
-        ]
+    # color = models.CharField(
+    #     'Цвет в HEX-формате',
+    #     max_length=7,
+    #     blank=False,
+    #     unique=True,
+    #     validators=[
+    #         RegexValidator(
+    #             '^#([a-fA-F0-9]{6})',
+    #             message='Нужно ввести HEX-код цвета.'
+    #         )
+    #     ]
 
-    )
+    # )
+    color = ColorField(blank=False)
     slug = models.SlugField(
         'Слаг',
-        max_length=200,
+        max_length=MAX_LENGHT,
         unique=True,
         blank=False
     )
 
     class Meta:
+        ordering = ('slug', )
         verbose_name = 'Тег'
         verbose_name_plural = 'Теги'
 
@@ -64,7 +69,7 @@ class Tag(models.Model):
 class Recipe(models.Model):
     name = models.CharField(
         'Название',
-        max_length=200,
+        max_length=MAX_LENGHT,
         blank=False
     )
     text = models.TextField(
@@ -131,6 +136,7 @@ class ShoppingCart(models.Model):
     class Meta:
         verbose_name = 'Корзина'
         verbose_name_plural = 'Корзина'
+        # default_related_name = 'shopping_cart'
         constraints = [
             models.UniqueConstraint(
                 fields=['user', 'recipe'],
