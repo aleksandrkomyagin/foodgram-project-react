@@ -1,5 +1,4 @@
 from django.contrib.auth import get_user_model
-# from django.core.validators import MinValueValidator, RegexValidator
 from django.core.validators import MinValueValidator
 from django.db import models
 from foodgram.settings import MAX_LENGHT
@@ -36,19 +35,6 @@ class Tag(models.Model):
         unique=True,
         max_length=MAX_LENGHT
     )
-    # color = models.CharField(
-    #     'Цвет в HEX-формате',
-    #     max_length=7,
-    #     blank=False,
-    #     unique=True,
-    #     validators=[
-    #         RegexValidator(
-    #             '^#([a-fA-F0-9]{6})',
-    #             message='Нужно ввести HEX-код цвета.'
-    #         )
-    #     ]
-
-    # )
     color = ColorField(blank=False)
     slug = models.SlugField(
         'Слаг',
@@ -123,20 +109,18 @@ class ShoppingCart(models.Model):
     user = models.ForeignKey(
         User,
         on_delete=models.CASCADE,
-        related_name='shopping_user',
         verbose_name='Добавил в корзину'
     )
     recipe = models.ForeignKey(
         Recipe,
         on_delete=models.CASCADE,
-        related_name='shopping_recipe',
         verbose_name='Рецепт в корзине'
     )
 
     class Meta:
         verbose_name = 'Корзина'
         verbose_name_plural = 'Корзина'
-        # default_related_name = 'shopping_cart'
+        default_related_name = 'shopping_cart'
         constraints = [
             models.UniqueConstraint(
                 fields=['user', 'recipe'],
@@ -187,19 +171,18 @@ class Favorite(models.Model):
     user = models.ForeignKey(
         User,
         on_delete=models.CASCADE,
-        related_name='favorite_user',
         verbose_name='Добавил в избранное'
     )
     recipe = models.ForeignKey(
         Recipe,
         on_delete=models.CASCADE,
-        related_name='favorite_recipe',
         verbose_name='Избранный рецепт'
     )
 
     class Meta:
         verbose_name = 'Избранное'
         verbose_name_plural = 'Избранное'
+        default_related_name = 'favorite_recipe'
         constraints = [
             models.UniqueConstraint(
                 fields=['user', 'recipe'],

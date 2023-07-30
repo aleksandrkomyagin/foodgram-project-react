@@ -8,14 +8,11 @@ load_dotenv()
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-SECRET_KEY = 'django-insecure-f#x(p!*-z_6ax0i3#*f54w2r5t_f9b^v_i0r_z45m2$kb2s8wq'
-# SECRET_KEY = os.getenv('SECRET_KEY', 'django-insecure-f#x(p!*-z_6ax0i3#*f54w2r5t_f9b^v_i0r_z45m2$kb2s8wq')
+SECRET_KEY = os.getenv('SECRET_KEY', 'django-insecure-f#x(p!*-z_6ax0i3#*f54w2r5t_f9b^v_i0r_z45m2$kb2s8wq')
 
-# DEBUG = os.getenv('DEBUG', 'False') == 'True'
-DEBUG = True
+DEBUG = os.getenv('DEBUG', 'False') == 'True'
 
-# ALLOWED_HOSTS = os.getenv('ALLOWED_HOSTS', '127.0.0.1, localhost').split(', ')
-ALLOWED_HOSTS = ['130.193.53.49', 'foodgram-top.sytes.net', '127.0.0.1', 'localhost']
+ALLOWED_HOSTS = os.getenv('ALLOWED_HOSTS', '127.0.0.1, localhost').split(', ')
 
 
 INSTALLED_APPS = [
@@ -117,8 +114,6 @@ REST_FRAMEWORK = {
         'django_filters.rest_framework.DjangoFilterBackend',
         'rest_framework.filters.SearchFilter',
     ],
-    # 'DEFAULT_PAGINATION_CLASS': 'api.pagination.LimitPagePagination',
-    # 'PAGE_SIZE': 6,
 }
 
 

@@ -68,9 +68,8 @@ class UserViewSet(mixins.CreateModelMixin,
 
         if request.method == 'DELETE':
             user = get_object_or_404(Subscribe, user=request.user,
-                                     author=author)
-            if user:
-                user.delete()
+                                     author=author).delete()
+            if user[0]:
                 return Response('Отписка!',
                                 status=status.HTTP_204_NO_CONTENT)
             return Response('Вы не подписаны на выбранного пользователя',
@@ -95,7 +94,6 @@ class UserViewSet(mixins.CreateModelMixin,
         pages = self.paginate_queryset(queryset)
         serializer = GetSubscribtionsSerializer(pages, many=True,
                                                 context={'request': request})
-        # print(serializer.data)
         return self.get_paginated_response(serializer.data)
 
 
@@ -103,37 +101,22 @@ class TagsViewSet(ListRetrieveVeiwSet):
     queryset = Tag.objects.all()
     permission_classes = (AllowAny,)
     serializer_class = TagSerializer
-    # pagination_class = None
 
 
 class IngredientsViewSet(ListRetrieveVeiwSet):
+    queryset = Ingredient.objects.all()
     serializer_class = IngredientSerializer
     permission_classes = (AllowAny,)
     filter_backends = (DjangoFilterBackend, )
-    # pagination_class = None
-    # search_fields = ('^name')
     filterset_class = IngredientFilter
-
-    # def get_queryset(self):
-    #     queryset = Ingredient.objects.all()
-    #     name = self.request.query_params.get('name')
-    #     if name:
-    #         return queryset.filter(name__icontains=name).order_by('name')
-    #     return queryset
-    def get_queryset(self):
-        return Ingredient.objects.all()
 
 
 class RecipeViewSet(viewsets.ModelViewSet):
     queryset = Recipe.objects.all()
     permission_classes = (IsAuthenticatedOrAuthorOrReadOnly, )
-    # permission_classes = (AllowAny, )
+    pagination_class = LimitPagePagination
     filter_backends = (DjangoFilterBackend, )
     filterset_class = RecipeFilter
-
-    # def get_queryset(self):
-    #     queryset = Recipe.objects.all().select_related('')
-    #     return super().get_queryset()
 
     def get_serializer_class(self):
         if self.request.method in ('POST', 'PATCH'):
@@ -153,10 +136,9 @@ class RecipeViewSet(viewsets.ModelViewSet):
         recipe = get_object_or_404(Recipe, id=self.kwargs['pk'])
 
         if request.method == 'DELETE':
-            user = get_object_or_404(Favorite, user=request.user,
-                                     recipe=recipe)
-            if user:
-                user.delete()
+            favorite_recipe = get_object_or_404(Favorite, user=request.user,
+                                                recipe=recipe).delete()
+            if favorite_recipe[0]:
                 return Response('Рецепт удален из избранного.',
                                 status=status.HTTP_204_NO_CONTENT)
             return Response('Выбранного рецепта нет в Избранных',
@@ -165,10 +147,7 @@ class RecipeViewSet(viewsets.ModelViewSet):
         serializer = GetRecipesSerializer(recipe, data=request.data,
                                           context={"request": request})
         serializer.is_valid(raise_exception=True)
-        # print(Favorite.objects.filter(user=request.user,
-        #                               recipe=recipe))
-        # print(request.user.favorite_user.all())
-        if request.user.favorite_user.all().exists():
+        if request.user.favorite_recipe.filter(recipe=recipe).exists():
             return Response('Рецепт уже в избранном.',
                             status=status.HTTP_400_BAD_REQUEST)
         Favorite.objects.create(user=request.user, recipe=recipe)
@@ -176,16 +155,14 @@ class RecipeViewSet(viewsets.ModelViewSet):
                         status=status.HTTP_201_CREATED)
 
     @action(detail=True, methods=['post', 'delete'],
-            permission_classes=(IsAuthenticated,),
-            pagination_class=None)
+            permission_classes=(IsAuthenticated,))
     def shopping_cart(self, request, **kwargs):
         recipe = get_object_or_404(Recipe, id=kwargs['pk'])
 
         if request.method == 'DELETE':
             order = get_object_or_404(ShoppingCart, user=request.user,
-                                      recipe=recipe)
-            if order:
-                order.delete()
+                                      recipe=recipe).delete()
+            if order[0]:
                 return Response('Рецепт удален из списка покупок.',
                                 status=status.HTTP_204_NO_CONTENT)
             return Response('Выбранного заказа нет в списке покупок',
@@ -194,10 +171,7 @@ class RecipeViewSet(viewsets.ModelViewSet):
         serializer = GetRecipesSerializer(recipe, data=request.data,
                                           context={"request": request})
         serializer.is_valid(raise_exception=True)
-        # print(ShoppingCart.objects.filter(user=request.user,
-        #                                   recipe=recipe))
-        # print(request.user.shopping_user.all())
-        if request.user.shopping_cart.all().exists():
+        if request.user.shopping_cart.filter(recipe=recipe).exists():
             return Response('Рецепт уже в списке покупок.',
                             status=status.HTTP_400_BAD_REQUEST)
         ShoppingCart.objects.create(user=request.user, recipe=recipe)
@@ -209,19 +183,19 @@ class RecipeViewSet(viewsets.ModelViewSet):
     def download_shopping_cart(self, request, **kwargs):
         ingredients = (
             RecipeIngredient.objects
-            .filter(recipe__shopping_recipe__user=request.user)
+            .filter(recipe__shopping_cart__user=request.user)
             .values('ingredient')
             .annotate(total_amount=Sum('amount'))
             .values_list('ingredient__name', 'total_amount',
                          'ingredient__measurement_unit')
-        )
+        ).order_by('ingredient__name')
         return self.generate_shopping_cart(ingredients)
 
     @staticmethod
     def generate_shopping_cart(ingredients):
         shopping_cart = []
         for ingredient in ingredients:
-            string = f'{0} - {1} {2}.'.format(*ingredient)
+            string = '{0} - {1} {2}.'.format(*ingredient)
             shopping_cart.append(string)
         file = HttpResponse('Cписок покупок:\n' + '\n'.join(shopping_cart),
                             content_type='text/plain')
