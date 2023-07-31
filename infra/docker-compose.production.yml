@@ -79,7 +79,7 @@ services:
     restart: always
   
   nginx:
-    image: nginx:1.19.3
+    image: nginx:latest
     depends_on:
       - backend
     ports:
