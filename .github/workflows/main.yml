@@ -136,7 +136,7 @@ jobs:
       #   passphrase: ${{ secrets.SSH_PASSPHRASE }}
       #   source: "docker-compose.production.yml"
       #   target: "foodgram"
-    - name: 'Create env file'
+    - name: Create env file
         run: |
           echo "${{ secrets.ENV_FILE }}" > .env
     - name: Executing remote ssh commands to deploy
