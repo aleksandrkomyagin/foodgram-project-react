@@ -141,7 +141,7 @@ jobs:
       #   .env: ${{ secrets.ENV_FILE }}
       run: |
         for i in ${{ secrets.ENV_FILE }}; do
-          echo i: ${i}
+          echo ${i}: ${i}
         done
       # uses: appleboy/ssh-action@master
       # with:
