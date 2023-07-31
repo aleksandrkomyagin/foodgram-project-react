@@ -137,7 +137,7 @@ jobs:
       #   source: "docker-compose.production.yml"
       #   target: "foodgram"
     - name: Create env file
-        run: |
+        script: |
           echo "${{ secrets.ENV_FILE }}" > .env
     - name: Executing remote ssh commands to deploy
       uses: appleboy/ssh-action@master
