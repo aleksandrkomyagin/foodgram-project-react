@@ -142,9 +142,9 @@ jobs:
         username: ${{ secrets.USER }}
         key: ${{ secrets.SSH_KEY }}
         passphrase: ${{ secrets.SSH_PASSPHRASE }}
-      run: |
-          cd foodgram/
-          echo "${{ secrets.ENV_FILE }}" > .env
+        run: |
+            cd foodgram/
+            echo "${{ secrets.ENV_FILE }}" > .env
     - name: Executing remote ssh commands to deploy
       uses: appleboy/ssh-action@master
       with:
