@@ -1,7 +1,7 @@
 from django.contrib.auth import get_user_model
 from django.core.validators import MinValueValidator
 from django.db import models
-from foodgram.settings import MAX_LENGHT
+from django.conf import settings
 from colorfield.fields import ColorField
 
 User = get_user_model()
@@ -11,12 +11,12 @@ class Ingredient(models.Model):
     name = models.CharField(
         'Название',
         blank=False,
-        max_length=MAX_LENGHT
+        max_length=settings.MAX_LENGHT
     )
     measurement_unit = models.CharField(
         'Единица измерения',
         blank=False,
-        max_length=MAX_LENGHT
+        max_length=settings.MAX_LENGHT
     )
 
     class Meta:
@@ -33,12 +33,12 @@ class Tag(models.Model):
         'Название',
         blank=False,
         unique=True,
-        max_length=MAX_LENGHT
+        max_length=settings.MAX_LENGHT
     )
     color = ColorField(blank=False)
     slug = models.SlugField(
         'Слаг',
-        max_length=MAX_LENGHT,
+        max_length=settings.MAX_LENGHT,
         unique=True,
         blank=False
     )
@@ -55,7 +55,7 @@ class Tag(models.Model):
 class Recipe(models.Model):
     name = models.CharField(
         'Название',
-        max_length=MAX_LENGHT,
+        max_length=settings.MAX_LENGHT,
         blank=False
     )
     text = models.TextField(

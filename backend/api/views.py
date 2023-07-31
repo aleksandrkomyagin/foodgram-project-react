@@ -65,11 +65,12 @@ class UserViewSet(mixins.CreateModelMixin,
             permission_classes=(IsAuthenticated,))
     def subscribe(self, request, **kwargs):
         author = get_object_or_404(User, id=kwargs['pk'])
+        subscribe = Subscribe.objects.filter(user=request.user,
+                                             author=author)
 
         if request.method == 'DELETE':
-            user = get_object_or_404(Subscribe, user=request.user,
-                                     author=author).delete()
-            if user[0]:
+            if subscribe:
+                subscribe.delete()
                 return Response('Отписка!',
                                 status=status.HTTP_204_NO_CONTENT)
             return Response('Вы не подписаны на выбранного пользователя',
@@ -78,8 +79,7 @@ class UserViewSet(mixins.CreateModelMixin,
         serializer = CreateUserSubscribeSerializer(
             author, data=request.data, context={"request": request})
         serializer.is_valid(raise_exception=True)
-        if Subscribe.objects.filter(user=request.user,
-                                    author=author).exists():
+        if subscribe.exists():
             return Response('Вы уже подписаны на такого автора',
                             status=status.HTTP_400_BAD_REQUEST)
         Subscribe.objects.create(user=request.user, author=author)
@@ -134,11 +134,11 @@ class RecipeViewSet(viewsets.ModelViewSet):
             methods=['post', 'delete'])
     def favorite(self, request, **kwargs):
         recipe = get_object_or_404(Recipe, id=self.kwargs['pk'])
+        favorite_recipe = request.user.favorite_recipe.filter(recipe=recipe)
 
         if request.method == 'DELETE':
-            favorite_recipe = get_object_or_404(Favorite, user=request.user,
-                                                recipe=recipe).delete()
-            if favorite_recipe[0]:
+            if favorite_recipe:
+                favorite_recipe.delete()
                 return Response('Рецепт удален из избранного.',
                                 status=status.HTTP_204_NO_CONTENT)
             return Response('Выбранного рецепта нет в Избранных',
@@ -147,7 +147,7 @@ class RecipeViewSet(viewsets.ModelViewSet):
         serializer = GetRecipesSerializer(recipe, data=request.data,
                                           context={"request": request})
         serializer.is_valid(raise_exception=True)
-        if request.user.favorite_recipe.filter(recipe=recipe).exists():
+        if favorite_recipe.exists():
             return Response('Рецепт уже в избранном.',
                             status=status.HTTP_400_BAD_REQUEST)
         Favorite.objects.create(user=request.user, recipe=recipe)
@@ -158,11 +158,11 @@ class RecipeViewSet(viewsets.ModelViewSet):
             permission_classes=(IsAuthenticated,))
     def shopping_cart(self, request, **kwargs):
         recipe = get_object_or_404(Recipe, id=kwargs['pk'])
+        order = request.user.shopping_cart.filter(recipe=recipe)
 
         if request.method == 'DELETE':
-            order = get_object_or_404(ShoppingCart, user=request.user,
-                                      recipe=recipe).delete()
-            if order[0]:
+            if order:
+                order.delete()
                 return Response('Рецепт удален из списка покупок.',
                                 status=status.HTTP_204_NO_CONTENT)
             return Response('Выбранного заказа нет в списке покупок',
@@ -171,7 +171,7 @@ class RecipeViewSet(viewsets.ModelViewSet):
         serializer = GetRecipesSerializer(recipe, data=request.data,
                                           context={"request": request})
         serializer.is_valid(raise_exception=True)
-        if request.user.shopping_cart.filter(recipe=recipe).exists():
+        if order.exists():
             return Response('Рецепт уже в списке покупок.',
                             status=status.HTTP_400_BAD_REQUEST)
         ShoppingCart.objects.create(user=request.user, recipe=recipe)

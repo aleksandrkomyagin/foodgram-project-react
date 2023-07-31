@@ -119,7 +119,7 @@ class ChangePasswordSerializer(serializers.Serializer):
                 'Новый пароль должен отличаться от текущего.'
             )
         instance.set_password(validated_data['new_password'])
-        instance.save()
+        # instance.save()
         return validated_data
 
 
@@ -177,12 +177,12 @@ class GetRecipeSerializer(serializers.ModelSerializer):
     def get_is_favorited(self, obj):
         request = self.context['request']
         return (request and request.user.is_authenticated
-                and request.user.favorite_recipe.exists())
+                and request.user.favorite_recipe.filter(recipe=obj).exists())
 
     def get_is_in_shopping_cart(self, obj):
         request = self.context['request']
         return (request and request.user.is_authenticated
-                and request.user.shopping_cart.exists())
+                and request.user.shopping_cart.filter(recipe=obj).exists())
 
 
 class EditIngredientSerializer(serializers.ModelSerializer):
@@ -256,7 +256,6 @@ class CreateRecipeSerializer(serializers.ModelSerializer):
         tags = validated_data.pop('tags')
         instance.ingredients.clear()
         self.create_recipe_ingredient(instance, tags, ingredients)
-        instance.save()
         return super().update(instance, validated_data)
 
     def to_representation(self, instance):
