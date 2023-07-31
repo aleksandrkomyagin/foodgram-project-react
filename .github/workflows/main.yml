@@ -140,7 +140,8 @@ jobs:
       # env:
       #   .env: ${{ secrets.ENV_FILE }}
       run: |
-        for i in ${{ secrets.ENV_FILE }}; do
+        IFS="," read -a myarray <<< ${{ secrets.ENV_FILE }}
+        for i in "${myarray[@]}"; do
           echo ${i}: ${i}
         done
       # uses: appleboy/ssh-action@master
