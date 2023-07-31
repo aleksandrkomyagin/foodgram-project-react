@@ -27,7 +27,7 @@ services:
   frontend:
     image:  aleksandrkomyagin/foodgram_frontend:latest
     depends_on:
-      - nginx
+      - backend
     command: cp -r /app/build/. /frontend_static/ 
     volumes: 
       - static:/frontend_static
@@ -36,7 +36,7 @@ services:
   nginx:
     image: nginx:1.19.3
     depends_on:
-      - backend
+      - frontend
     ports:
       - 8080:80
     volumes:
