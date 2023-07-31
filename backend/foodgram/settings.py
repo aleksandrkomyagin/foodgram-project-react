@@ -12,7 +12,7 @@ SECRET_KEY = os.getenv('SECRET_KEY', 'django-insecure-f#x(p!*-z_6ax0i3#*f54w2r5t
 
 DEBUG = os.getenv('DEBUG', 'False') == 'True'
 
-ALLOWED_HOSTS = os.getenv('ALLOWED_HOSTS', '127.0.0.1, localhost').split(', ')
+ALLOWED_HOSTS = os.getenv('ALLOWED_HOSTS', '127.0.0.1, localhost, foodgram-top.sytes.net').split(', ')
 
 
 INSTALLED_APPS = [
