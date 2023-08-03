@@ -2,9 +2,10 @@ import django.contrib.auth.password_validation as validator
 from django.contrib.auth import get_user_model
 from djoser.serializers import UserCreateSerializer, UserSerializer
 from drf_base64.fields import Base64ImageField
-from rest_framework import serializers
 
-from recipes.models import (Ingredient, Recipe, RecipeIngredient, Tag)
+from recipes.models import Ingredient, Recipe, RecipeIngredient, Tag
+
+from rest_framework import serializers
 
 User = get_user_model()
 
@@ -218,11 +219,11 @@ class CreateRecipeSerializer(serializers.ModelSerializer):
             raise serializers.ValidationError(
                 'Нужно указать хотя бы 1 ингредиент.'
             )
-        else:
-            for ingredient in ingredients:
-                if int(ingredient.get('amount')) < 1:
-                    raise serializers.ValidationError(
-                        'Количество ингредиента должно быть больше 1!')
+        for num, ingredient in enumerate(ingredients, 1):
+            if int(ingredient.get('amount')) < 1:
+                raise serializers.ValidationError(
+                    f'Количество {num} ингредиента в списке '
+                    f'должно быть больше 1!')
         inrgedients_id = [id['id'] for id in ingredients]
         if len(inrgedients_id) != len(set(inrgedients_id)):
             raise serializers.ValidationError(
