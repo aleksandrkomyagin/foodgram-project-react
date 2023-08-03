@@ -218,14 +218,19 @@ class CreateRecipeSerializer(serializers.ModelSerializer):
             raise serializers.ValidationError(
                 'Нужно указать хотя бы 1 ингредиент.'
             )
-        if not tags:
-            raise serializers.ValidationError(
-                'Нужно указать хотя бы 1 тег.'
-            )
+        else:
+            for ingredient in ingredients:
+                if int(ingredient.get('amount')) < 1:
+                    raise serializers.ValidationError(
+                        'Количество ингредиента должно быть больше 1!')
         inrgedients_id = [id['id'] for id in ingredients]
         if len(inrgedients_id) != len(set(inrgedients_id)):
             raise serializers.ValidationError(
                 'Не может быть два одинаковых ингредиента.'
+            )
+        if not tags:
+            raise serializers.ValidationError(
+                'Нужно указать хотя бы 1 тег.'
             )
         if len(tags) != len(set(tags)):
             raise serializers.ValidationError(
